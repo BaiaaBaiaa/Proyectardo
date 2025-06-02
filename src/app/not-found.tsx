@@ -25,10 +25,10 @@ export default function NotFound(): React.JSX.Element {
           />
         </Box>
         <Typography variant="h3" sx={{ textAlign: 'center' }}>
-          404: The page you are looking for isn&apos;t here
+          404: La página que buscas no Existe
         </Typography>
         <Typography color="text.secondary" variant="body1" sx={{ textAlign: 'center' }}>
-          You either tried some shady route or you came here by mistake. Whichever it is, try using the navigation
+          Lugar Equivocado D:
         </Typography>
         <Button
           component={RouterLink}
@@ -36,7 +36,7 @@ export default function NotFound(): React.JSX.Element {
           startIcon={<ArrowLeftIcon fontSize="var(--icon-fontSize-md)" />}
           variant="contained"
         >
-          Go back to home
+          Vuelve al inicio!
         </Button>
       </Stack>
     </Box>
