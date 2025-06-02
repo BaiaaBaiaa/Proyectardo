@@ -29,7 +29,7 @@ const schema = zod.object({
 
 type Values = zod.infer<typeof schema>;
 
-const defaultValues = { email: 'sofia@devias.io', password: 'Secret1' } satisfies Values;
+const defaultValues = { email: '', password: '' };
 
 export function SignInForm(): React.JSX.Element {
   const router = useRouter();
@@ -47,27 +47,36 @@ export function SignInForm(): React.JSX.Element {
     formState: { errors },
   } = useForm<Values>({ defaultValues, resolver: zodResolver(schema) });
 
-  const onSubmit = React.useCallback(
-    async (values: Values): Promise<void> => {
-      setIsPending(true);
+const onSubmit = React.useCallback(
+  async (values: Values): Promise<void> => {
+    setIsPending(true);
 
-      const { error } = await authClient.signInWithPassword(values);
+    try {
+      const res = await fetch('http://localhost:8000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values)
+      });
 
-      if (error) {
-        setError('root', { type: 'server', message: error });
-        setIsPending(false);
-        return;
+      const result = await res.json();
+      console.log('Respuesta del backend:', result);  // 👈 Log del token o error
+
+      if (result.token) {
+        localStorage.setItem('token', result.token);
+        alert('Login exitoso'); // 👈 Confirmación visual de que entra aquí
+        router.push('/dashboard'); // 👈 Esta es la redirección real
+      } else {
+        setError('root', { type: 'server', message: 'Credenciales incorrectas' });
       }
+    } catch (err) {
+      setError('root', { type: 'server', message: 'Error al conectar al servidor' });
+    } finally {
+      setIsPending(false);
+    }
+  },
+  [router, setError]
+);
 
-      // Refresh the auth state
-      await checkSession?.();
-
-      // UserProvider, for this case, will not refresh the router
-      // After refresh, GuestGuard will handle the redirect
-      router.refresh();
-    },
-    [checkSession, router, setError]
-  );
 
   return (
     <Stack spacing={4}>

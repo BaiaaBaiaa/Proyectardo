@@ -44,7 +44,7 @@ export function Budget({ diff, trend, sx, value }: BudgetProps): React.JSX.Eleme
                 </Typography>
               </Stack>
               <Typography color="text.secondary" variant="caption">
-                Since last month
+                Hola
               </Typography>
             </Stack>
           ) : null}
