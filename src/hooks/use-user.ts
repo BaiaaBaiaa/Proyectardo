@@ -1,14 +1,28 @@
-import * as React from 'react';
+'use client';
 
-import type { UserContextValue } from '@/contexts/user-context';
-import { UserContext } from '@/contexts/user-context';
+import { useEffect, useState } from 'react';
 
-export function useUser(): UserContextValue {
-  const context = React.useContext(UserContext);
+interface User {
+  token: string | null;
+  email: string | null;
+}
 
-  if (!context) {
-    throw new Error('useUser must be used within a UserProvider');
-  }
+export function useUser() {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  return context;
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const email = localStorage.getItem('email');
+
+    if (token && email) {
+      setUser({ token, email });
+    } else {
+      setUser(null);
+    }
+
+    setIsLoading(false);
+  }, []);
+
+  return { user, isLoading };
 }

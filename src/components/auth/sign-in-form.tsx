@@ -23,8 +23,8 @@ import { authClient } from '@/lib/auth/client';
 import { useUser } from '@/hooks/use-user';
 
 const schema = zod.object({
-  email: zod.string().min(1, { message: 'Email is required' }).email(),
-  password: zod.string().min(1, { message: 'Password is required' }),
+  email: zod.string().min(1, { message: 'Se necesita un Correo' }).email(),
+  password: zod.string().min(1, { message: 'Se necesita una Contraseña' }),
 });
 
 type Values = zod.infer<typeof schema>;
@@ -34,7 +34,7 @@ const defaultValues = { email: '', password: '' };
 export function SignInForm(): React.JSX.Element {
   const router = useRouter();
 
-  const { checkSession } = useUser();
+  useUser();
 
   const [showPassword, setShowPassword] = React.useState<boolean>();
 
@@ -63,7 +63,7 @@ const onSubmit = React.useCallback(
 
       if (result.token) {
         localStorage.setItem('token', result.token);
-        alert('Login exitoso'); // 👈 Confirmación visual de que entra aquí
+        localStorage.setItem('email', values.email);
         router.push('/dashboard'); // 👈 Esta es la redirección real
       } else {
         setError('root', { type: 'server', message: 'Credenciales incorrectas' });
@@ -81,11 +81,11 @@ const onSubmit = React.useCallback(
   return (
     <Stack spacing={4}>
       <Stack spacing={1}>
-        <Typography variant="h4">Sign in</Typography>
+        <Typography variant="h4">Iniciar Sesión</Typography>
         <Typography color="text.secondary" variant="body2">
-          Don&apos;t have an account?{' '}
+          No tienes una cuenta?{' '}
           <Link component={RouterLink} href={paths.auth.signUp} underline="hover" variant="subtitle2">
-            Sign up
+            Registrate!
           </Link>
         </Typography>
       </Stack>
@@ -96,7 +96,7 @@ const onSubmit = React.useCallback(
             name="email"
             render={({ field }) => (
               <FormControl error={Boolean(errors.email)}>
-                <InputLabel>Email address</InputLabel>
+                <InputLabel>Correo Electrónico</InputLabel>
                 <OutlinedInput {...field} label="Email address" type="email" />
                 {errors.email ? <FormHelperText>{errors.email.message}</FormHelperText> : null}
               </FormControl>
@@ -107,7 +107,7 @@ const onSubmit = React.useCallback(
             name="password"
             render={({ field }) => (
               <FormControl error={Boolean(errors.password)}>
-                <InputLabel>Password</InputLabel>
+                <InputLabel>Contraseña</InputLabel>
                 <OutlinedInput
                   {...field}
                   endAdornment={
@@ -138,25 +138,15 @@ const onSubmit = React.useCallback(
           />
           <div>
             <Link component={RouterLink} href={paths.auth.resetPassword} variant="subtitle2">
-              Forgot password?
+              Olvidaste tu Contraseña?
             </Link>
           </div>
           {errors.root ? <Alert color="error">{errors.root.message}</Alert> : null}
           <Button disabled={isPending} type="submit" variant="contained">
-            Sign in
+            Iniciar Sesión
           </Button>
         </Stack>
       </form>
-      <Alert color="warning">
-        Use{' '}
-        <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
-          sofia@devias.io
-        </Typography>{' '}
-        with password{' '}
-        <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
-          Secret1
-        </Typography>
-      </Alert>
     </Stack>
   );
 }
